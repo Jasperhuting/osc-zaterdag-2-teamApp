@@ -7,21 +7,26 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	state: {
 		loading: true,
-    players: [],
+		players: [],
+		matches: [],
+		opponents: [],
 	},
 	getters: {
 		players(state) {
 			return state.players
+		},
+		matches(state) {
+			return state.matches
+		},
+		opponents(state) {
+			return state.opponents
 		}
 	},
 	mutations: {
 		retrievePlayers(state, players) {
-			console.log(state, players)
       state.players = players
 		},
 		addPlayer(state, player) {
-			console.log(state, player);
-			console.log(state.players);
       state.players.push({
         firstName: player.firstName,
         lastName: player.lastName,
@@ -37,6 +42,27 @@ export default new Vuex.Store({
       if (index >= 0) {
         state.players.splice(index, 1)
       }
+		},
+		retrieveMatches(state, matches) {
+      state.matches = matches
+		},
+		retrieveOpponents(state, opponents) {
+      state.opponents = opponents
+		},
+		addMatch(state, match) {
+      state.matches.push({
+        matchDate: match.date,
+        matchOpponent: match.opponent,
+        matchCategory: match.category,
+				matchTimestamp: new Date(),
+			})
+		},
+		deleteMatch(state, id) {
+      const index = state.matches.findIndex(item => item.id == id)
+
+      if (index >= 0) {
+        state.matches.splice(index, 1)
+      }
     },
 	},
 	actions: {
@@ -48,8 +74,6 @@ export default new Vuex.Store({
               const source = change.doc.metadata.hasPendingWrites ? 'Local' : 'Server'
 
               if (source === 'Server') {
-								console.log(change.doc.data())
-								console.log(change.doc)
                 context.commit('addPlayer', {
                   firstName: change.doc.data().firstName,
                   lastName: change.doc.data().lastName,
@@ -64,6 +88,30 @@ export default new Vuex.Store({
             }
             if (change.type === 'removed') {
               context.commit('deletePlayer', change.doc.id)
+            }
+          })
+				})
+				
+				db.collection('matches').onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+							console.log('added');
+              const source = change.doc.metadata.hasPendingWrites ? 'Local' : 'Server'
+
+              if (source === 'Server') {
+								console.log(change.doc.data())
+                context.commit('addMatch', {
+                  matchDate: change.doc.data().date,
+                  matchCategory: change.doc.data().category,
+                  matchOpponent: change.doc.data().opponent,
+                })
+              }
+            }
+            if (change.type === 'modified') {
+							// TODO
+            }
+            if (change.type === 'removed') {
+              context.commit('deleteMatch', change.doc.id)
             }
           })
         })
@@ -86,8 +134,39 @@ export default new Vuex.Store({
 				context.commit('retrievePlayers', tempPlayers)
 			})
 		},
+		retrieveOpponents(context) {
+			db.collection('opponents').get()
+			.then(querySnapshot => {
+				let tempOpponents = []
+				querySnapshot.forEach(doc => {
+					const data = {
+						id: doc.id,
+						name: doc.data().name,
+						address: doc.data().address,
+					}
+					tempOpponents.push(data)
+				})
+				context.commit('retrieveOpponents', tempOpponents)
+			})
+		},
+		retrieveMatches(context) {
+			db.collection('matches').get()
+			.then(querySnapshot => {
+				let tempMatches = []
+				querySnapshot.forEach(doc => {
+					console.log(doc.data())
+					const data = {
+						id: doc.id,
+						matchDate: doc.data().date,
+						matchOpponent: doc.data().opponent,
+						matchCategory: doc.data().category
+					}
+					tempMatches.push(data)
+				})
+				context.commit('retrieveMatches', tempMatches)
+			})
+		},
 		addPlayer(context, player) {
-			console.log(player)
       db.collection('players').add({
         firstName: player.firstName,
         lastName: player.lastName,
@@ -97,7 +176,6 @@ export default new Vuex.Store({
         timestamp: new Date(),
       })
       .then(docRef => {
-				console.log('docRef', docRef);
         context.commit('addPlayer', {
           id: docRef.id,
 					firstName: player.firstName,
@@ -110,10 +188,34 @@ export default new Vuex.Store({
       })
 
 		},
+		addMatch(context, match) {
+      db.collection('matches').add({
+        date: match.date,
+        opponent: match.opponent,
+        category: match.category,
+        timestamp: new Date(),
+      })
+      .then(docRef => {
+        context.commit('addMatch', {
+          id: docRef.id,
+					date: match.date,
+					category: match.category,
+					opponent: match.opponent,
+					timestamp: new Date(),
+        })
+      })
+
+		},
 		deletePlayer(context, id) {
       db.collection('players').doc(id).delete()
         .then(() => {
           context.commit('deletePlayer', id)
+        })
+		},
+		deleteMatch(context, id) {
+      db.collection('matches').doc(id).delete()
+        .then(() => {
+          context.commit('deleteMatch', id)
         })
     },
   }

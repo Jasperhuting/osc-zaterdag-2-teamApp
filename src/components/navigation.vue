@@ -7,6 +7,7 @@
         <li><router-link to='/overview'><i class="fa fa-th-list"></i></router-link></li>
         <li><router-link to='/dashboard'><i class="fa fa-cog"></i></router-link></li>
         <li><router-link to='/players'>Spelers aanpassen</router-link></li>
+        <li><router-link to='/matches'>Wedstrijden aanpassen</router-link></li>
       </ul>
     </div>
 	</nav>
