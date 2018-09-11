@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import db from '../components/firebaseInit'
+// import db from '../components/firebaseInit'
 
 export default {
 	name: 'overview',
@@ -29,23 +29,23 @@ export default {
 	},
 	methods: {
 		getList: function() {
-			db.collection('players').orderBy("number", "asc").get().then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        const data = {
-          'id' : doc.id,
-          'firstName' : doc.data().firstName,
-          'cleanSheets' : doc.data().cleanSheets,
-          'goals' : doc.data().goals,
-          'lastName' : doc.data().lastName,
-          'number' : doc.data().number,
-          'position' : doc.data().position,
-          'timePlayed' : doc.data().timePlayed,
-					'userId' : doc.data().userId,
-					'imageUrl' : doc.data().imageUrl,
-        }
-        this.players.push(data);
-      })
-    })
+		// 	db.collection('players').orderBy("number", "asc").get().then(querySnapshot => {
+    //   querySnapshot.forEach(doc => {
+    //     const data = {
+    //       'id' : doc.id,
+    //       'firstName' : doc.data().firstName,
+    //       'cleanSheets' : doc.data().cleanSheets,
+    //       'goals' : doc.data().goals,
+    //       'lastName' : doc.data().lastName,
+    //       'number' : doc.data().number,
+    //       'position' : doc.data().position,
+    //       'timePlayed' : doc.data().timePlayed,
+		// 			'userId' : doc.data().userId,
+		// 			'imageUrl' : doc.data().imageUrl,
+    //     }
+    //     this.players.push(data);
+    //   })
+    // })
 		}
 	},
   created() {

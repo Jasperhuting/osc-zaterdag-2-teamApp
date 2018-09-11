@@ -4,6 +4,7 @@ import Home from '@/pages/Home';
 import Overview from '@/pages/Overview';
 import Dashboard from '@/pages/Dashboard';
 import Present from '@/pages/Present';
+import Players from '@/pages/Players';
 
 Vue.use(Router);
 
@@ -13,6 +14,11 @@ export default new Router({
       path: '/',
       name: 'Home',
       component: Home,
+    },
+    {
+      path: '/players',
+      name: 'Players',
+      component: Players,
     },
     {
       path: '/overview',

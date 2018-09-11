@@ -3,7 +3,7 @@
 		<h3>Dashboard</h3>
 
 		Add Match
-		{{ categoriesNew }}
+		<!-- {{ categoriesNew }} -->
 		
 		<form v-on:submit.prevent="addMatch">
 			Id :<input type="text" name="id" v-model="matchId" disabled><br />
@@ -26,28 +26,24 @@
 			<button type="submit">Add/Edit</button>
 		</form>
 
-		<ul>
+		<!-- <ul>
 			<li class="category" v-bind:class="{ active: category.id == categoryId }" v-for="category in categories" v-bind:key="category.id" v-on:click.prevent="editCategory(category)">
 				{{category.id}} {{category.name}}
 				<button v-on:click="Delete(category)">Delete</button>	
 			</li>
-		</ul>
+		</ul> -->
 
 	</div>
 </template>
 
 <script>
 
-import db from '../components/firebaseInit'
-
 export default {
 	name: 'dashboard',
-	props: ['categoriesNew'],
 	data () {
 		return {
 			categoryId: 0,
 			categoryName: '',
-			categories: [],
 			matchId: 0,
 			matchOpponent: '',
 			matchDate: '',
@@ -67,7 +63,7 @@ export default {
 			console.log(elem.id);
 			console.log(elem.name);
 
-			db.collection("matches").doc(String(elem.id)).delete().then(() => {
+			this.$store.state.db.collection("matches").doc(String(elem.id)).delete().then(() => {
 					console.log("Document successfully deleted!");
 					this.getMatches()
 					this.updateMatchID()
@@ -85,7 +81,7 @@ export default {
 			console.log(elem.id);
 			console.log(elem.name);
 
-			db.collection("categories").doc(String(elem.id)).delete().then(() => {
+			this.$store.state.db.collection("categories").doc(String(elem.id)).delete().then(() => {
 					console.log("Document successfully deleted!");
 					// this.getCategories()
 					this.updateCategoryID()
@@ -110,7 +106,7 @@ export default {
 		// },
 		getMatches: function() {
 			this.matches = []
-			db.collection('matches').orderBy("id", "asc").get().then(querySnapshot => {
+			this.$store.state.db.collection('matches').orderBy("id", "asc").get().then(querySnapshot => {
 				querySnapshot.forEach(doc => {
 					const data = {
 						'id' : doc.id,
@@ -129,7 +125,7 @@ export default {
     	})
 		},
 		updateMatchID: function() {
-			db.collection("matches").get().then((querySnapshot) => {
+			this.$store.state.db.collection("matches").get().then((querySnapshot) => {
 				console.log(this.matches);
 				this.matchId = parseInt(this.matches[querySnapshot.size - 1].id) + 1;
 			}).catch(function(error) {
@@ -138,7 +134,7 @@ export default {
 		},
 		addCategory: function(event) {
 	
-			db.collection("categories").doc(String(this.categoryId)).set({
+			this.$store.state.db.collection("categories").doc(String(this.categoryId)).set({
 				name: this.categoryName,
 				id: this.categoryId
 			}).then(() => {
@@ -152,7 +148,7 @@ export default {
 		},
 		addMatch: function(event) {
 	
-			db.collection("matches").doc(String(this.matchId)).set({
+			this.$store.state.db.collection("matches").doc(String(this.matchId)).set({
 				name: this.matchName,
 				id: this.matchId
 			}).then(() => {
@@ -165,7 +161,7 @@ export default {
 			});
 		},
 		updateCategoryID: function() {
-			db.collection("categories").get().then((querySnapshot) => {
+			this.$store.state.db.collection("categories").get().then((querySnapshot) => {
 				// console.log(this.categories);
 				// this.categoryId = parseInt(this.categories[querySnapshot.size - 1].id) + 1;
 			}).catch(function(error) {
@@ -181,6 +177,9 @@ export default {
 		this.getMatches()
 		this.updateMatchID()
 		this.updateCategoryID()
+	},
+	created() {
+		console.log()
 	}
 }
 </script>

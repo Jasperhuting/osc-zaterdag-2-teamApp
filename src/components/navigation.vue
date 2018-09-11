@@ -5,8 +5,8 @@
       <ul class="right hide-on-med-and-down">
         <li><router-link to='/present'><i class="fa fa-calendar"></i></router-link></li>
         <li><router-link to='/overview'><i class="fa fa-th-list"></i></router-link></li>
-        <li><a href="" v-on:click.prevent="refresh"><i class="fa fa-refresh"></i></a></li>
         <li><router-link to='/dashboard'><i class="fa fa-cog"></i></router-link></li>
+        <li><router-link to='/players'>Spelers aanpassen</router-link></li>
       </ul>
     </div>
 	</nav>
