@@ -2,10 +2,11 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2></h2>
+		
 		<div class="addMatch">
-			<input class="match-input" type="date" placeholder="Datum" v-model="matchDate">
-			<multiselect v-model="matchOpponent" :options="opponents" label="name" placeholder="Selecteer tegenstander"></multiselect>
-			<multiselect v-model="matchCategory" :options="categories" placeholder="Selecteer categorie"></multiselect>
+			<datetime input-class="matchDate" v-model="matchDate" placeholder="Kies datum + tijd" type="datetime"></datetime>
+			<multiselect v-model="matchCategory" :options="categories" @input="onChangeCat" placeholder="Selecteer categorie"></multiselect>
+			<multiselect v-model="matchOpponent" :options="opponents" label="name" :disabled="isDisabled" placeholder="Selecteer tegenstander"></multiselect>
 			<button v-on:click.prevent="addMatch">Toevoegen</button>
 		</div>
 		
@@ -21,10 +22,10 @@
 
 			<div class="grid" v-for="match in matches" v-bind:key="match.id">
 				<span class="date grid-item">{{ match.matchDate }}</span>
-				<span class="opponent grid-item">{{ opponents[match.matchOpponent] }}</span>
+				<span class="opponent grid-item">{{ showOpponent(opponents[match.matchOpponent]) }}</span>
 				<span class="category grid-item">{{ match.matchCategory }}</span>
 				<span class="settings grid-item">
-					<button class="edit" @click="editMatch(match.id)">Wijzig</button>
+					<!-- <button class="edit" @click="editMatch(match.id)">Wijzig</button> -->
 					<button class="delete" @click="removeMatch(match.id)">Verwijder</button>
 				</span>
 			</div>
@@ -44,6 +45,7 @@ export default {
       matchOpponent: '',
 			matchCategory: '',
 			opponent: [],
+			isDisabled: false,
 			categories: ['Bekerwedstrijd','Competitiewedstrijd','Training','Oefenwedstrijd']
     };
 	},
@@ -61,6 +63,25 @@ export default {
     }
 	},
 	methods: {
+		onChangeCat(value) {
+			console.log(value)
+			if (value === 'Training') {
+				this.matchOpponent = {id:'1',name:'Training'}
+				this.isDisabled = true
+			} else {
+				this.matchOpponent = ''
+				this.isDisabled = false
+			}
+    },
+		showOpponent(opponent) {
+			console.log(opponent);
+			let outputValue = '';
+			if (opponent) {
+				outputValue = opponent.name
+			}
+			// return opponent.name ? opponent.name : opponent
+			return outputValue
+		},
     addMatch() {
       this.$store.dispatch('addMatch', {
         date: this.matchDate,
@@ -74,6 +95,27 @@ export default {
 		},
 		removeMatch(id) {
       this.$store.dispatch('deleteMatch', id)
+		},
+		editMatch() {
+      this.beforeEditCache = this.title
+      this.editing = true
+    },
+    doneEdit() {
+      if (this.title.trim() == '') {
+        this.title = this.beforeEditCache
+      }
+      this.editing = false
+      this.$store.dispatch('updateTodo', {
+        'id': this.id,
+        'title': this.title,
+        'completed': this.completed,
+        'timestamp': this.timestamp,
+        'editing': this.editing,
+      })
+    },
+    cancelEdit() {
+      this.title = this.beforeEditCache
+      this.editing = false
     },
   }
 };
@@ -103,32 +145,31 @@ a {
 }
 .addMatch {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 10fr 10fr 10fr 3fr;
+	padding: .5em;
 }
 .grid {
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr 1fr;
+  grid-template-columns: 10fr 10fr 10fr 3fr;
   grid-auto-rows: 2em;
 	grid-row-gap: 10px;
   align-items: center;
   background: #eee;
   padding: .5em;
-  box-decoration-break: clone;
   border-radius: 2px;
-  counter-reset: nb;
 }
 .grid-item {
-	border-bottom: 1px solid #000;
-	padding-bottom: 8px;
+	border-top: 1px solid #000;
+	padding-top: 14px;
+	height: 36px;
+	overflow: hidden;
 }
+
 input {
   align-self: stretch;
   border-radius: 2px;
-  border: 1px solid #ccc;
-}
-label::before {
-  counter-increment: nb;
-  content: counter(nb) ". ";
+	border: 1px solid #f90 !important;
+  /* border: 1px solid #ccc; */
 }
 .imageUrl img {
 	max-width: 40px;

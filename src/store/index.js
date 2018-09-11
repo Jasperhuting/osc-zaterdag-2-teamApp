@@ -92,7 +92,7 @@ export default new Vuex.Store({
           })
 				})
 				
-				db.collection('matches').onSnapshot(snapshot => {
+				db.collection('matches').orderBy('date', 'asc').onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
 							console.log('added');
@@ -150,7 +150,7 @@ export default new Vuex.Store({
 			})
 		},
 		retrieveMatches(context) {
-			db.collection('matches').get()
+			db.collection('matches').orderBy('date', 'asc').get()
 			.then(querySnapshot => {
 				let tempMatches = []
 				querySnapshot.forEach(doc => {

@@ -2,12 +2,14 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2></h2>
-		<input type="text" class="player-input" placeholder="Voornaam" v-model="firstName">
-		<input type="text" class="player-input" placeholder="Achternaam" v-model="lastName">
-		<input type="text" class="player-input" placeholder="Nummer" v-model="number">
-		<multiselect v-model="position" :options="positions" :multiple="true"></multiselect>
-		<input type="text" class="player-input" placeholder="ImageUrl" v-model="imageUrl">
-		<button v-on:click.prevent="addPlayer">Toevoegen</button>
+		<div class="addPlayer">
+			<input type="text" class="player-input" placeholder="Voornaam" v-model="firstName">
+			<input type="text" class="player-input" placeholder="Achternaam" v-model="lastName">
+			<input type="text" class="player-input" placeholder="Nummer" v-model="number">
+			<multiselect v-model="position" :options="positions" :multiple="true" placeholder="Selecteer positie(s)"></multiselect>
+			<input type="text" class="player-input" placeholder="ImageUrl" v-model="imageUrl">
+			<button v-on:click.prevent="addPlayer">Toevoegen</button>
+		</div>
 
 		<div class="columns">
 			<div class="grid">
@@ -23,11 +25,11 @@
 				<span class="number grid-item">{{ player.number }}</span>
 				<span class="firstName grid-item">{{ player.firstName }}</span>
 				<span class="lastName grid-item">{{ player.lastName }}</span>
-				<span class="position grid-item">{{ player.position }}</span>
+				<span class="position grid-item" v-html="showPositions(player.position)"></span>
 				<span class="imageUrl grid-item"><img v-bind:src="player.imageUrl" /></span>
 				<span class="settings grid-item">
 					<button class="delete" @click="removePlayer(player.id)">Delete player</button>
-					<button class="edit" @click="editPlayer(player.id)">edit player</button>
+					<!-- <button class="edit" @click="editPlayer(player.id)">edit player</button> -->
 				</span>
 			</div>
 		</div>
@@ -61,6 +63,15 @@ export default {
     }
 	},
 	methods: {
+		showPositions(positions) {
+			console.log(positions);
+			let positionsOutput = ''
+			for (var i = 0; i < positions.length; i ++) {
+				let space = positions.length - 1 === i  ? '' : ' '
+				positionsOutput += `<span class="position-item">${positions[i]}</span>${space}`
+			}
+			return positionsOutput
+		},
     addPlayer() {
       this.$store.dispatch('addPlayer', {
         firstName: this.firstName,
@@ -116,11 +127,14 @@ a {
   padding: .5em;
   box-decoration-break: clone;
   border-radius: 2px;
-  counter-reset: nb;
+  overflow: hidden;
+	height: 37px;
 }
 .grid-item {
 	border-bottom: 1px solid #000;
 	padding-bottom: 8px;
+	overflow: hidden;
+	height: 29px;
 }
 input {
   align-self: stretch;
@@ -134,5 +148,10 @@ label::before {
 .imageUrl img {
 	max-width: 40px;
 }
+.addPlayer {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(33%, 1fr) ) ;
+}
+
 
 </style>

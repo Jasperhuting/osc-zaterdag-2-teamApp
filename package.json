@@ -16,10 +16,13 @@
   "dependencies": {
     "babel-polyfill": "^6.26.0",
     "firebase": "^5.4.2",
+    "luxon": "^1.3.3",
     "vue": "^2.5.2",
+    "vue-datetime": "^1.0.0-beta.6",
     "vue-multiselect": "^2.1.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "weekstart": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

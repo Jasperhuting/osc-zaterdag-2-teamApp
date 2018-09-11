@@ -5,8 +5,11 @@ import App from './App';
 import router from './router';
 import store from './store'
 import Multiselect from 'vue-multiselect'
+import { Datetime } from 'vue-datetime';
+import 'vue-datetime/dist/vue-datetime.css'
 
 Vue.component('multiselect', Multiselect)
+Vue.component('datetime', Datetime);
 
 Vue.config.productionTip = false;
 
@@ -15,6 +18,6 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: { App, Multiselect },
+  components: { App, Multiselect, Datetime },
   template: '<App/>',
 });
