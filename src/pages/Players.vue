@@ -5,15 +5,9 @@
 		<input type="text" class="player-input" placeholder="Voornaam" v-model="firstName">
 		<input type="text" class="player-input" placeholder="Achternaam" v-model="lastName">
 		<input type="text" class="player-input" placeholder="Nummer" v-model="number">
-		<input type="text" class="player-input" placeholder="Position" v-model="position">
-		<select v-model="positions" multiple>
-			<option disabled value="">Kies positie</option>
-			<option v-for="position in positions" v-bind:key="position" v-bind:value="position">{{ position }}</option>
-		</select>
+		<multiselect v-model="position" :options="positions" :multiple="true"></multiselect>
 		<input type="text" class="player-input" placeholder="ImageUrl" v-model="imageUrl">
 		<button v-on:click.prevent="addPlayer">Toevoegen</button>
-		
-
 
 		<div class="columns">
 			<div class="grid">
@@ -44,7 +38,7 @@
 <script>
 
 export default {
-  name: 'Players',
+	name: 'Players',
   data() {
     return {
 			msg: 'players',
@@ -53,6 +47,7 @@ export default {
       position: '',
       number: '',
 			imageUrl: '',
+			positionValue: '',
 			positions: ['Aanvaller','Middenvelder','Verdediger','Keeper']
     };
 	},

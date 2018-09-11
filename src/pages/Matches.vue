@@ -2,16 +2,12 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2></h2>
-		<input class="match-input" type="date" placeholder="Datum" v-model="matchDate">
-		<select v-model="matchOpponent">
-			<option disabled value="">Kies tegenstander</option>
-			<option v-for="opponent in opponents" v-bind:key="opponent.id" v-bind:value="opponent.id">{{ opponent.name }}</option>
-		</select>
-		<select v-model="matchCategory">
-			<option disabled value="">Kies categorie</option>
-			<option v-for="category in categories" v-bind:key="category" v-bind:value="category">{{ category }}</option>
-		</select>
-		<button v-on:click.prevent="addMatch">Toevoegen</button>
+		<div class="addMatch">
+			<input class="match-input" type="date" placeholder="Datum" v-model="matchDate">
+			<multiselect v-model="matchOpponent" :options="opponents" label="name" placeholder="Selecteer tegenstander"></multiselect>
+			<multiselect v-model="matchCategory" :options="categories" placeholder="Selecteer categorie"></multiselect>
+			<button v-on:click.prevent="addMatch">Toevoegen</button>
+		</div>
 		
 
 
@@ -68,7 +64,7 @@ export default {
     addMatch() {
       this.$store.dispatch('addMatch', {
         date: this.matchDate,
-        opponent: this.matchOpponent,
+        opponent: this.matchOpponent.id,
         category: this.matchCategory,
 				timestamp: new Date(),
       })
@@ -104,6 +100,10 @@ a {
   column-width: auto;
   max-width: 100%;
   margin: 0 auto;
+}
+.addMatch {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 .grid {
   display: grid;
