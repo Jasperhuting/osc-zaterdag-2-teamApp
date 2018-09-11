@@ -12,7 +12,7 @@
 		</div>
 
 		<div class="columns">
-			<div class="grid">
+			<div class="grid-header">
 				<span class="number">Nr.</span>
 				<span class="firstName">Voornaam</span>
 				<span class="lastName">Achternaam</span>
@@ -68,7 +68,7 @@ export default {
 			let positionsOutput = ''
 			for (var i = 0; i < positions.length; i ++) {
 				let space = positions.length - 1 === i  ? '' : ' '
-				positionsOutput += `<span class="position-item">${positions[i]}</span>${space}`
+				positionsOutput += `<span class="position-item position-item--${positions[i]}">${positions[i]}</span>${space}`
 			}
 			return positionsOutput
 		},
@@ -117,18 +117,19 @@ a {
   max-width: 100%;
   margin: 0 auto;
 }
-.grid {
+.grid-header {
+	background: #eee;
+}
+.grid, .grid-header {
   display: grid;
-  grid-template-columns: 1fr 2fr 2fr 3fr 2fr 2fr;
-  grid-auto-rows: 2em;
-	grid-row-gap: 10px;
-  align-items: center;
-  background: #eee;
-  padding: .5em;
-  box-decoration-break: clone;
-  border-radius: 2px;
-  overflow: hidden;
-	height: 37px;
+	grid-template-columns: 1fr 2fr 2fr 3fr 2fr 2fr;
+	grid-auto-rows: 2em;
+	align-items: center;
+	padding: 0 .5em;
+	border-radius: 2px;
+	overflow: hidden;
+	height: 38px;
+	line-height: 38px;
 }
 .grid-item {
 	border-bottom: 1px solid #000;

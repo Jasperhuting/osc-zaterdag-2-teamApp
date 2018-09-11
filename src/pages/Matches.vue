@@ -13,15 +13,15 @@
 
 
 		<div class="columns">
-			<div class="grid">
+			<div class="grid-header">
 				<span class="date">Datum.</span>
 				<span class="opponent">Tegenstander</span>
 				<span class="category">Categorie</span>
 				<span class="change"></span>
 			</div>
 
-			<div class="grid" v-for="match in matches" v-bind:key="match.id">
-				<span class="date grid-item">{{ match.matchDate }}</span>
+			<div class="grid" v-for="match in matches" v-bind:key="match.id"  v-bind:class="laterThanToday(match.matchDate)">
+				<span class="date grid-item">{{ match.matchDate | formatDateTime }}</span>
 				<span class="opponent grid-item">{{ showOpponent(opponents[match.matchOpponent]) }}</span>
 				<span class="category grid-item">{{ match.matchCategory }}</span>
 				<span class="settings grid-item">
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+
+import moment from 'moment'
 
 export default {
   name: 'Matches',
@@ -63,6 +65,11 @@ export default {
     }
 	},
 	methods: {
+		laterThanToday(value) {
+			if (value) {
+    		return moment(value) > moment() ? 'future' : 'past'
+  		}
+		},
 		onChangeCat(value) {
 			console.log(value)
 			if (value === 'Training') {
@@ -105,7 +112,7 @@ export default {
         this.title = this.beforeEditCache
       }
       this.editing = false
-      this.$store.dispatch('updateTodo', {
+      this.$store.dispatch('updateMatch', {
         'id': this.id,
         'title': this.title,
         'completed': this.completed,
@@ -148,13 +155,18 @@ a {
   grid-template-columns: 10fr 10fr 10fr 3fr;
 	padding: .5em;
 }
-.grid {
+.grid-header {
+	background: #eee;
+}
+.grid.past {
+	display: none;
+}
+.grid, .grid-header {
   display: grid;
   grid-template-columns: 10fr 10fr 10fr 3fr;
   grid-auto-rows: 2em;
 	grid-row-gap: 10px;
   align-items: center;
-  background: #eee;
   padding: .5em;
   border-radius: 2px;
 }

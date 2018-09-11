@@ -2,11 +2,23 @@
   <div class="hello">
     <h1>{{ msg }}</h1>
     <h2></h2>
-
+		presentSingle
+		
 		Datum: 8 september <br />
 		Tegenstander: Uni vv <br />
 		Categorie: beker <br />
+		Aanwezig: [0,1] <br />
+		Afwezig: [2,4] <br />
 
+
+		<!-- <div class="grid" v-for="match in matches" v-bind:key="match.id"  v-bind:class="laterThanToday(match.matchDate)">
+			<span class="date grid-item">{{ match.matchDate | formatDateTime }}</span>
+			<span class="opponent grid-item">{{ showOpponent(opponents[match.matchOpponent]) }}</span>
+			<span class="category grid-item">{{ match.matchCategory }}</span>
+			<span class="settings grid-item">
+				<button class="delete" @click="removeMatch(match.id)">Verwijder</button>
+			</span>
+		</div> -->
 	</div>
 
 </template>
@@ -16,7 +28,7 @@
 import moment from 'moment'
 
 export default {
-  name: 'PresentList',
+  name: 'PresentSingle',
   data() {
     return {
 			msg: 'Aanwezigheid',
