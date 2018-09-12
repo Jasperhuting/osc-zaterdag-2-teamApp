@@ -6,6 +6,7 @@
         <!-- <li><router-link to='/overview'><i class="fa fa-th-list"></i></router-link></li> -->
         <li><router-link to='/players'>Spelers beheren</router-link></li>
         <li><router-link to='/matches'>Wedstrijden beheren</router-link></li>
+        <li><router-link to='/opponents'>Tegenstanders beheren</router-link></li>
         <li><router-link to='/present'>Aanwezigheid beheren</router-link></li>
       </ul>
     </div>

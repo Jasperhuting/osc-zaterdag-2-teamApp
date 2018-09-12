@@ -6,6 +6,7 @@ import Present from '@/pages/Present';
 import PresentSingle from '@/pages/PresentSingle';
 import Players from '@/pages/Players';
 import Matches from '@/pages/Matches';
+import Opponents from '@/pages/Opponents';
 
 Vue.use(Router);
 
@@ -25,6 +26,11 @@ export default new Router({
       path: '/matches',
       name: 'Matches',
       component: Matches,
+    },
+    {
+      path: '/opponents',
+      name: 'Opponents',
+      component: Opponents,
     },
     {
       path: '/overview',

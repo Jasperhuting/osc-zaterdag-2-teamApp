@@ -16,7 +16,13 @@ export default new Vuex.Store({
 			return state.players
 		},
 		matches(state) {
-			return state.matches
+			// console.log(state.matches)
+			return state.matches.sort(function(a, b) {
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        return new Date(a.matchDate) - new Date(b.matchDate);
+      });
+			// return state => state.sort.map(matchDate => state.matches[matchDate])
 		},
 		opponents(state) {
 			return state.opponents
@@ -26,14 +32,37 @@ export default new Vuex.Store({
 		retrievePlayers(state, players) {
       state.players = players
 		},
+		retrieveMatches(state, matches) {
+      state.matches = matches
+		},
+		retrieveOpponents(state, opponents) {
+      state.opponents = opponents
+		},
 		addPlayer(state, player) {
       state.players.push({
+				id: player.id,
         firstName: player.firstName,
         lastName: player.lastName,
         position: player.position,
 				timestamp: new Date(),
 				number: parseInt(player.number),
 				imageUrl: player.imageUrl,
+			})
+		},
+		addMatch(state, match) {
+      state.matches.push({
+				id: match.id,
+        matchDate: match.date,
+        matchOpponent: match.opponent,
+        matchCategory: match.category,
+				matchTimestamp: new Date(),
+			})
+		},
+		addOpponent(state, opponent) {
+      state.opponents.push({
+				id: opponent.id,
+        clubName: opponent.clubName,
+				matchTimestamp: new Date(),
 			})
 		},
 		deletePlayer(state, id) {
@@ -43,25 +72,18 @@ export default new Vuex.Store({
         state.players.splice(index, 1)
       }
 		},
-		retrieveMatches(state, matches) {
-      state.matches = matches
-		},
-		retrieveOpponents(state, opponents) {
-      state.opponents = opponents
-		},
-		addMatch(state, match) {
-      state.matches.push({
-        matchDate: match.date,
-        matchOpponent: match.opponent,
-        matchCategory: match.category,
-				matchTimestamp: new Date(),
-			})
-		},
 		deleteMatch(state, id) {
       const index = state.matches.findIndex(item => item.id == id)
 
       if (index >= 0) {
         state.matches.splice(index, 1)
+      }
+		},
+		deleteOpponent(state, id) {
+      const index = state.opponents.findIndex(item => item.id == id)
+
+      if (index >= 0) {
+        state.opponents.splice(index, 1)
       }
     },
 	},
@@ -74,6 +96,7 @@ export default new Vuex.Store({
 
               if (source === 'Server') {
                 context.commit('addPlayer', {
+									id: change.doc.id,
                   firstName: change.doc.data().firstName,
                   lastName: change.doc.data().lastName,
                   number: parseInt(change.doc.data().number),
@@ -98,6 +121,7 @@ export default new Vuex.Store({
 
               if (source === 'Server') {
                 context.commit('addMatch', {
+									id: change.doc.id,
                   matchDate: change.doc.data().date,
                   matchCategory: change.doc.data().category,
                   matchOpponent: change.doc.data().opponent,
@@ -109,6 +133,27 @@ export default new Vuex.Store({
             }
             if (change.type === 'removed') {
               context.commit('deleteMatch', change.doc.id)
+            }
+          })
+				})
+
+				db.collection('opponents').orderBy('clubName', 'asc').onSnapshot(snapshot => {
+          snapshot.docChanges().forEach(change => {
+            if (change.type === 'added') {
+              const source = change.doc.metadata.hasPendingWrites ? 'Local' : 'Server'
+
+              if (source === 'Server') {
+                context.commit('addOpponent', {
+									id: change.doc.id,
+                  clubName: change.doc.data().clubName,
+                })
+              }
+            }
+            if (change.type === 'modified') {
+							// TODO
+            }
+            if (change.type === 'removed') {
+              context.commit('deleteOpponent', change.doc.id)
             }
           })
         })
@@ -131,21 +176,6 @@ export default new Vuex.Store({
 				context.commit('retrievePlayers', tempPlayers)
 			})
 		},
-		retrieveOpponents(context) {
-			db.collection('opponents').get()
-			.then(querySnapshot => {
-				let tempOpponents = []
-				querySnapshot.forEach(doc => {
-					const data = {
-						id: doc.id,
-						name: doc.data().name,
-						address: doc.data().address,
-					}
-					tempOpponents.push(data)
-				})
-				context.commit('retrieveOpponents', tempOpponents)
-			})
-		},
 		retrieveMatches(context) {
 			db.collection('matches').orderBy('date', 'asc').get()
 			.then(querySnapshot => {
@@ -160,6 +190,20 @@ export default new Vuex.Store({
 					tempMatches.push(data)
 				})
 				context.commit('retrieveMatches', tempMatches)
+			})
+		},
+		retrieveOpponents(context) {
+			db.collection('opponents').get()
+			.then(querySnapshot => {
+				let tempOpponents = []
+				querySnapshot.forEach(doc => {
+					const data = {
+						id: doc.id,
+						clubName: doc.data().clubName,
+					}
+					tempOpponents.push(data)
+				})
+				context.commit('retrieveOpponents', tempOpponents)
 			})
 		},
 		addPlayer(context, player) {
@@ -202,6 +246,20 @@ export default new Vuex.Store({
       })
 
 		},
+		addOpponent(context, opponent) {
+      db.collection('opponents').add({
+        clubName: opponent.clubName,
+        timestamp: new Date(),
+      })
+      .then(docRef => {
+        context.commit('addOpponent', {
+          id: docRef.id,
+					clubName: opponent.clubName,
+					timestamp: new Date(),
+        })
+      })
+
+		},
 		deletePlayer(context, id) {
       db.collection('players').doc(id).delete()
         .then(() => {
@@ -212,6 +270,12 @@ export default new Vuex.Store({
       db.collection('matches').doc(id).delete()
         .then(() => {
           context.commit('deleteMatch', id)
+        })
+		},
+		deleteOpponent(context, id) {
+      db.collection('opponents').doc(id).delete()
+        .then(() => {
+          context.commit('deleteOpponent', id)
         })
     },
   }

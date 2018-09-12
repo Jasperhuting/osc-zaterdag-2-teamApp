@@ -5,8 +5,8 @@
 		
 		<div class="addMatch">
 			<datetime input-class="matchDate" v-model="matchDate" placeholder="Kies datum + tijd" type="datetime"></datetime>
-			<multiselect v-model="matchCategory" :options="categories" @input="onChangeCat" placeholder="Selecteer categorie"></multiselect>
-			<multiselect v-model="matchOpponent" :options="opponents" label="name" :disabled="isDisabled" placeholder="Selecteer tegenstander"></multiselect>
+			<multiselect v-model="matchCategory" :options="categories" placeholder="Selecteer categorie"></multiselect>
+			<multiselect v-model="matchOpponent" :options="opponents" label="clubName" placeholder="Selecteer tegenstander"></multiselect>
 			<button v-on:click.prevent="addMatch">Toevoegen</button>
 		</div>
 		
@@ -20,9 +20,10 @@
 				<span class="change"></span>
 			</div>
 
-			<div class="grid" v-for="match in matches" v-bind:key="match.id"  v-bind:class="laterThanToday(match.matchDate)">
+			<div class="grid" v-for="(match, i) in matches" v-bind:key="i + '-match'"  v-bind:class="laterThanToday(match.matchDate)">
 				<span class="date grid-item">{{ match.matchDate | formatDateTime }}</span>
-				<span class="opponent grid-item">{{ showOpponent(opponents[match.matchOpponent]) }}</span>
+				<!-- <span class="opponent grid-item">{{ opponents.doc(match.matchOpponent) }}</span> -->
+				<span class="opponent grid-item"> {{ match.matchOpponent }}</span>
 				<span class="category grid-item">{{ match.matchCategory }}</span>
 				<span class="settings grid-item">
 					<!-- <button class="edit" @click="editMatch(match.id)">Wijzig</button> -->
@@ -46,6 +47,7 @@ export default {
       matchDate: '',
       matchOpponent: '',
 			matchCategory: '',
+			clubName: '',
 			opponent: [],
 			isDisabled: false,
 			categories: ['Bekerwedstrijd','Competitiewedstrijd','Training','Oefenwedstrijd']
@@ -62,7 +64,7 @@ export default {
 		},
 		opponents() {
       return this.$store.getters.opponents
-    }
+		},
 	},
 	methods: {
 		laterThanToday(value) {
@@ -70,26 +72,10 @@ export default {
     		return moment(value) > moment() ? 'future' : 'past'
   		}
 		},
-		onChangeCat(value) {
-			if (value === 'Training') {
-				this.matchOpponent = {id:'1',name:'Training'}
-				this.isDisabled = true
-			} else {
-				this.matchOpponent = ''
-				this.isDisabled = false
-			}
-    },
-		showOpponent(opponent) {
-			let outputValue = '';
-			if (opponent) {
-				outputValue = opponent.name
-			}
-			return outputValue
-		},
     addMatch() {
       this.$store.dispatch('addMatch', {
         date: this.matchDate,
-        opponent: this.matchOpponent.id,
+        opponent: this.matchOpponent.clubName,
         category: this.matchCategory,
 				timestamp: new Date(),
       })

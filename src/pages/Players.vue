@@ -30,7 +30,7 @@
 				<span class="change"></span>
 			</div>
 
-			<div class="grid" v-for="player in players" v-bind:key="player.id">
+			<div class="grid" v-for="(player, i) in players" v-bind:key="i + '-player'">
 				<span class="number grid-item">{{ player.number }}</span>
 				<span class="firstName grid-item">{{ player.firstName }}</span>
 				<span class="lastName grid-item">{{ player.lastName }}</span>
@@ -53,6 +53,7 @@ export default {
   data() {
     return {
 			msg: 'players',
+			id: '',
       firstName: '',
       lastName: '',
       position: '',
@@ -60,7 +61,7 @@ export default {
 			imageUrl: '',
 			positionValue: '',
 			positions: ['Aanvaller','Middenvelder','Verdediger','Keeper'],
-			numbers: [],
+			// numbers: [],
     };
 	},
 	created() {
