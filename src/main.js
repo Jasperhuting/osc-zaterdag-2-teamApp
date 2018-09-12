@@ -8,7 +8,9 @@ import Multiselect from 'vue-multiselect'
 import moment from 'moment'
 import { Datetime } from 'vue-datetime';
 import 'vue-datetime/dist/vue-datetime.css'
+import VModal from 'vue-js-modal'
 
+Vue.use(VModal)
 Vue.component('multiselect', Multiselect)
 Vue.component('datetime', Datetime);
 

@@ -71,7 +71,6 @@ export default {
   		}
 		},
 		onChangeCat(value) {
-			console.log(value)
 			if (value === 'Training') {
 				this.matchOpponent = {id:'1',name:'Training'}
 				this.isDisabled = true
@@ -81,12 +80,10 @@ export default {
 			}
     },
 		showOpponent(opponent) {
-			console.log(opponent);
 			let outputValue = '';
 			if (opponent) {
 				outputValue = opponent.name
 			}
-			// return opponent.name ? opponent.name : opponent
 			return outputValue
 		},
     addMatch() {

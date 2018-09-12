@@ -1,22 +1,31 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h2></h2>
-		<div class="addPlayer">
-			<input type="text" class="player-input" placeholder="Voornaam" v-model="firstName">
-			<input type="text" class="player-input" placeholder="Achternaam" v-model="lastName">
-			<input type="text" class="player-input" placeholder="Nummer" v-model="number">
-			<multiselect v-model="position" :options="positions" :multiple="true" placeholder="Selecteer positie(s)"></multiselect>
-			<input type="text" class="player-input" placeholder="ImageUrl" v-model="imageUrl">
-			<button v-on:click.prevent="addPlayer">Toevoegen</button>
-		</div>
+		<button v-on:click="show()">Voeg speler toe</button>
+
+		<modal name="hello-world">
+			<div class="addPlayer">
+				<input type="text" class="player-input" placeholder="Voornaam" v-model="firstName">
+				<input type="text" class="player-input" placeholder="Achternaam" v-model="lastName">
+				<input type="number" class="player-input" placeholder="Nummer" v-model="number">
+				<!-- <multiselect v-model="number" :options="numbers" placeholder="Selecteer nummer"></multiselect> -->
+				<multiselect v-model="position" :options="positions" :multiple="true" :close-on-select="false" placeholder="Selecteer positie(s)"></multiselect>
+				<input type="text" class="player-input" placeholder="ImageUrl" v-model="imageUrl">
+				<button v-on:click.prevent="addPlayer">Toevoegen</button>
+			</div>
+		</modal>
 
 		<div class="columns">
 			<div class="grid-header">
-				<span class="number">Nr.</span>
+				<span class="number" v-on:click="sortBy(players)">Nr.</span>
 				<span class="firstName">Voornaam</span>
 				<span class="lastName">Achternaam</span>
-				<span class="position">Positie(s)</span>
+				<span class="position">
+					<span class="position-item position-item--Aanvaller" @click="togglePosition('Aanvaller')">Aanvaller</span>
+					<span class="position-item position-item--Middenvelder" @click="togglePosition('Middenvelder')">Middenvelder</span>
+					<span class="position-item position-item--Verdediger" @click="togglePosition('Verdediger')">Verdediger</span>
+					<span class="position-item position-item--Keeper" @click="togglePosition('keeper')">Keeper</span>
+				</span>
 				<span class="imageUrl">Foto</span>
 				<span class="change"></span>
 			</div>
@@ -28,7 +37,7 @@
 				<span class="position grid-item" v-html="showPositions(player.position)"></span>
 				<span class="imageUrl grid-item"><img v-bind:src="player.imageUrl" /></span>
 				<span class="settings grid-item">
-					<button class="delete" @click="removePlayer(player.id)">Delete player</button>
+				<button class="delete" @click="removePlayer(player.id)">Delete player</button>
 					<!-- <button class="edit" @click="editPlayer(player.id)">edit player</button> -->
 				</span>
 			</div>
@@ -50,7 +59,8 @@ export default {
       number: '',
 			imageUrl: '',
 			positionValue: '',
-			positions: ['Aanvaller','Middenvelder','Verdediger','Keeper']
+			positions: ['Aanvaller','Middenvelder','Verdediger','Keeper'],
+			numbers: [],
     };
 	},
 	created() {
@@ -63,17 +73,36 @@ export default {
     }
 	},
 	methods: {
+		show () {
+			this.$modal.show('hello-world');
+		},
+		hide () {
+			this.$modal.hide('hello-world');
+		},
+		sortBy: function(players) {
+      players.sort(function(a, b) {
+				return a.number - b.number;
+			});
+    },
 		showPositions(positions) {
-			console.log(positions);
 			let positionsOutput = ''
-			for (var i = 0; i < positions.length; i ++) {
-				let space = positions.length - 1 === i  ? '' : ' '
-				positionsOutput += `<span class="position-item position-item--${positions[i]}">${positions[i]}</span>${space}`
+			for (var i = 0; i < this.positions.length; i ++) {
+				let space = this.positions.length - 1 === i  ? '' : ' '
+				let extra = ''
+				if (positions) {
+					extra = positions.includes(this.positions[i]) ? `position-item--${this.positions[i]}` : ''
+				}
+				positionsOutput += `<span class="position-item ${extra}">${this.positions[i]}</span>${space}`
 			}
 			return positionsOutput
 		},
+		togglePosition(position) {
+			console.log(position)
+		},
+
     addPlayer() {
       this.$store.dispatch('addPlayer', {
+				id: this.id,
         firstName: this.firstName,
         lastName: this.lastName,
         number: this.number,
@@ -81,15 +110,17 @@ export default {
 				imageUrl: this.imageUrl,
 				timestamp: new Date(),
       })
-      this.firstName = ''
+			this.id = ''
+			this.firstName = ''
       this.lastName = ''
       this.number = ''
 			this.imageUrl = ''
 			this.position = ''
 		},
 		removePlayer(id) {
-			console.log(id);
-      this.$store.dispatch('deletePlayer', id)
+			if (id) {
+				this.$store.dispatch('deletePlayer', id)
+			}
     },
   }
 };
@@ -122,7 +153,7 @@ a {
 }
 .grid, .grid-header {
   display: grid;
-	grid-template-columns: 1fr 2fr 2fr 3fr 2fr 2fr;
+	grid-template-columns: 1fr 2fr 2fr 4fr 2fr 2fr;
 	grid-auto-rows: 2em;
 	align-items: center;
 	padding: 0 .5em;

@@ -88,6 +88,14 @@ input {
   width: 100%;
   margin: 0px;
 }
+.position-item {
+	border-radius: 5px;
+	color:#fff;
+  background-color: lightgray;
+	display: inline;
+  font-size: 11px;
+  padding: .3em .5em;
+}
 .position-item--Keeper {
 	background-color: #b9b142;
 }
@@ -99,13 +107,6 @@ input {
 }
 .position-item--Aanvaller {
 	background-color: #b94283;
-}
-.position-item {
-	border-radius: 5px;
-	color:#fff;
-	display: inline;
-  font-size: 11px;
-  padding: .3em .5em;
 }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

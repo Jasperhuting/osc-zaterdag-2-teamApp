@@ -32,7 +32,7 @@ export default new Vuex.Store({
         lastName: player.lastName,
         position: player.position,
 				timestamp: new Date(),
-				number: player.number,
+				number: parseInt(player.number),
 				imageUrl: player.imageUrl,
 			})
 		},
@@ -70,14 +70,13 @@ export default new Vuex.Store({
       db.collection('players').onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
-							console.log('added');
               const source = change.doc.metadata.hasPendingWrites ? 'Local' : 'Server'
 
               if (source === 'Server') {
                 context.commit('addPlayer', {
                   firstName: change.doc.data().firstName,
                   lastName: change.doc.data().lastName,
-                  number: change.doc.data().number,
+                  number: parseInt(change.doc.data().number),
                   position: change.doc.data().position,
                   imageUrl: change.doc.data().imageUrl,
                 })
@@ -95,11 +94,9 @@ export default new Vuex.Store({
 				db.collection('matches').orderBy('date', 'asc').onSnapshot(snapshot => {
           snapshot.docChanges().forEach(change => {
             if (change.type === 'added') {
-							console.log('added');
               const source = change.doc.metadata.hasPendingWrites ? 'Local' : 'Server'
 
               if (source === 'Server') {
-								console.log(change.doc.data())
                 context.commit('addMatch', {
                   matchDate: change.doc.data().date,
                   matchCategory: change.doc.data().category,
@@ -126,7 +123,7 @@ export default new Vuex.Store({
 						firstName: doc.data().firstName,
 						lastName: doc.data().lastName,
 						position: doc.data().position,
-						number: doc.data().number,
+						number: parseInt(doc.data().number),
 						imageUrl: doc.data().imageUrl
 					}
 					tempPlayers.push(data)
@@ -154,7 +151,6 @@ export default new Vuex.Store({
 			.then(querySnapshot => {
 				let tempMatches = []
 				querySnapshot.forEach(doc => {
-					console.log(doc.data())
 					const data = {
 						id: doc.id,
 						matchDate: doc.data().date,
@@ -170,7 +166,7 @@ export default new Vuex.Store({
       db.collection('players').add({
         firstName: player.firstName,
         lastName: player.lastName,
-        number: player.number,
+        number: parseInt(player.number),
         position: player.position,
         imageUrl: player.imageUrl,
         timestamp: new Date(),
@@ -180,7 +176,7 @@ export default new Vuex.Store({
           id: docRef.id,
 					firstName: player.firstName,
 					lastName: player.lastName,
-					number: player.number,
+					number: parseInt(player.number),
 					position: player.position,
 					imageUrl: player.imageUrl,
 					timestamp: new Date(),

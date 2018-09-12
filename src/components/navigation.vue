@@ -22,11 +22,7 @@ export default {
 			osclogo,
 		}
 	},
-	methods: {
-		refresh: function() {
-				console.log('test');
-			},
-	}
+	methods: {}
 }
 </script>
 
