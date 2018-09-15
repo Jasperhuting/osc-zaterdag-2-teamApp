@@ -65,6 +65,7 @@ export default {
     };
 	},
 	created() {
+		debugger;
 		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrievePlayers')
 	},

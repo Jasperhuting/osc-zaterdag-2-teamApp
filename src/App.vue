@@ -85,7 +85,6 @@ input {
   border-radius: 5px;
   border: 1px solid #e8e8e8;
   padding: 0px 10px;
-  width: 100%;
   margin: 0px;
 }
 .position-item {
@@ -107,6 +106,9 @@ input {
 }
 .position-item--Aanvaller {
 	background-color: #b94283;
+}
+.btn-secondary {
+  background-color: grey;
 }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

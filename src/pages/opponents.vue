@@ -1,12 +1,19 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-		<button v-on:click="show()">Voeg tegenstander toe</button>
+		<button v-on:click="showModal()">Voeg tegenstander toe</button>
 
 		<modal name="hello-world">
-			<div class="addOpponent">
-				<input type="text" class="opponent-input" placeholder="Naam club" v-model="clubName">
-				<button v-on:click.prevent="addOpponent">Toevoegen</button>
+			<div class="container">
+				<h2>Voeg tegenstander toe</h2>
+				<div class="addOpponent">
+					<label for="clubName">Naam club</label>
+					<input name="clubName" type="text" class="opponent-input" placeholder="Naam club" v-model="clubName">
+				</div>
+				<div class="button-container">
+					<button class="btn-secondary hideModal" v-on:click="hideModal()">Annuleren</button>
+					<button v-on:click.prevent="addOpponent">Toevoegen</button>
+				</div>
 			</div>
 		</modal>
 
@@ -18,8 +25,10 @@
 
 			<div class="grid" v-for="(opponent, i) in opponents" v-bind:key="i + '-opponent'">
 				<span class="clubName grid-item">{{ opponent.clubName }}</span>
-				<button class="edit" @click="editOpponent(opponent.id)">Wijzig</button>
-				<button class="delete" @click="removeOpponent(opponent.id)">Verwijder</button>
+				<span class="grid-item">
+					<button class="edit" @click="editOpponent(opponent.id)">Wijzig</button>
+					<button class="delete" @click="removeOpponent(opponent.id)">Verwijder</button>
+				</span>
 			</div>
 		</div>
 
@@ -47,10 +56,10 @@ export default {
     }
 	},
 	methods: {
-		show () {
+		showModal () {
 			this.$modal.show('hello-world');
 		},
-		hide () {
+		hideModal () {
 			this.$modal.hide('hello-world');
 		},
 		sortBy: function(opponents) {
@@ -103,7 +112,7 @@ a {
 }
 .grid, .grid-header {
   display: grid;
-	grid-template-columns: 4fr 1fr 1fr;
+	grid-template-columns: 1fr auto;
 	grid-auto-rows: 2em;
 	align-items: center;
 	padding: 0 .5em;
@@ -125,8 +134,23 @@ input {
 }
 .addOpponent {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(50%, 1fr) ) ;
+	grid-template-columns: 49% 49%;
+	grid-column-gap: 1em;
 }
-
-
+button.hideModal {
+	margin: 1em 0;
+}
+.container {
+	padding: 1em;
+}
+.button-container {
+	position: absolute;
+	bottom:0.4em;
+	left: 1em;
+	right: 1em;
+	text-align: right;
+}
+.button-container button {
+	padding:10px;
+}
 </style>

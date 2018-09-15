@@ -6,6 +6,7 @@
 		<div class="addMatch">
 			<datetime input-class="matchDate" v-model="matchDate" placeholder="Kies datum + tijd" type="datetime"></datetime>
 			<multiselect v-model="matchCategory" :options="categories" placeholder="Selecteer categorie"></multiselect>
+      <multiselect v-model="matchHome" :options="homeAway" label="name" value="bln" placeholder="Selecteer thuis/uit"></multiselect>
 			<multiselect v-model="matchOpponent" :options="opponents" label="clubName" placeholder="Selecteer tegenstander"></multiselect>
 			<button v-on:click.prevent="addMatch">Toevoegen</button>
 		</div>
@@ -17,14 +18,16 @@
 				<span class="date">Datum.</span>
 				<span class="opponent">Tegenstander</span>
 				<span class="category">Categorie</span>
+				<span class="homeAway">Thuis/Uit</span>
 				<span class="change"></span>
 			</div>
 
 			<div class="grid" v-for="(match, i) in matches" v-bind:key="i + '-match'"  v-bind:class="laterThanToday(match.matchDate)">
 				<span class="date grid-item">{{ match.matchDate | formatDateTime }}</span>
 				<!-- <span class="opponent grid-item">{{ opponents.doc(match.matchOpponent) }}</span> -->
-				<span class="opponent grid-item"> {{ match.matchOpponent }}</span>
+				<span class="opponent grid-item"> {{ showOpponent(match.matchOpponent) }}</span>
 				<span class="category grid-item">{{ match.matchCategory }}</span>
+				<span class="homeAway grid-item">{{ match.matchHome ? 'Thuis' : 'Uit' }}</span>
 				<span class="settings grid-item">
 					<!-- <button class="edit" @click="editMatch(match.id)">Wijzig</button> -->
 					<button class="delete" @click="removeMatch(match.id)">Verwijder</button>
@@ -46,27 +49,38 @@ export default {
 			msg: 'matches',
       matchDate: '',
       matchOpponent: '',
-			matchCategory: '',
+      matchCategory: '',
+      matchHome: '',
 			clubName: '',
 			opponent: [],
-			isDisabled: false,
+      isDisabled: false,
+      homeAway: [{name:'thuis',bln:true},{name:'uit',bln:false}],
 			categories: ['Bekerwedstrijd','Competitiewedstrijd','Training','Oefenwedstrijd']
     };
 	},
 	created() {
+    console.log(this.$store);
 		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrieveOpponents')
 		this.$store.dispatch('retrieveMatches')
 	},
 	computed: {
     matches() {
-      return this.$store.getters.matches
+      return this.$store.getters.matches.matches
 		},
 		opponents() {
-      return this.$store.getters.opponents
+      return this.$store.getters.opponents.opponents
 		},
 	},
 	methods: {
+    showOpponent(id) {
+      if (id) {
+        var data = this.opponents.find(( ele ) => (ele.id === id))
+        if(data) {
+          return data.clubName
+        }
+      }
+    },
 		laterThanToday(value) {
 			if (value) {
     		return moment(value) > moment() ? 'future' : 'past'
@@ -75,12 +89,14 @@ export default {
     addMatch() {
       this.$store.dispatch('addMatch', {
         date: this.matchDate,
-        opponent: this.matchOpponent.clubName,
+        opponent: this.matchOpponent.id,
+        homeAway: this.matchHome.bln,
         category: this.matchCategory,
 				timestamp: new Date(),
       })
       this.matchDate = ''
       this.matchOpponent = ''
+      this.matchHome = ''
       this.matchCategory = ''
 		},
 		removeMatch(id) {
@@ -146,7 +162,7 @@ a {
 }
 .grid, .grid-header {
   display: grid;
-  grid-template-columns: 10fr 10fr 10fr 3fr;
+  grid-template-columns: 10fr 10fr 10fr 3fr 3fr;
   grid-auto-rows: 2em;
 	grid-row-gap: 10px;
   align-items: center;
