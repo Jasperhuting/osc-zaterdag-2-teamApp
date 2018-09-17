@@ -4,7 +4,7 @@ import Home from '@/pages/Home';
 import Overview from '@/pages/Overview';
 import Present from '@/pages/Present';
 import PresentSingle from '@/pages/PresentSingle';
-import Players from '@/pages/Players';
+import Selection from '@/pages/Selection';
 import Matches from '@/pages/Matches';
 import Opponents from '@/pages/Opponents';
 
@@ -18,9 +18,9 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/players',
-      name: 'Players',
-      component: Players,
+      path: '/selection',
+      name: 'Selection',
+      component: Selection,
     },
     {
       path: '/matches',

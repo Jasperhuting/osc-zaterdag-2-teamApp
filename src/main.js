@@ -9,8 +9,17 @@ import moment from 'moment'
 import { Datetime } from 'vue-datetime';
 import 'vue-datetime/dist/vue-datetime.css'
 import VModal from 'vue-js-modal'
+import Vuelidate from 'vuelidate'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+library.add(faTrashAlt)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+Vue.use(Vuelidate)
 Vue.use(VModal)
+
 Vue.component('multiselect', Multiselect)
 Vue.component('datetime', Datetime);
 

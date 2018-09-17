@@ -1,14 +1,17 @@
 <template>
-  <div class="hello">
+  <div class="opponents">
     <h1>{{ msg }}</h1>
-		<button v-on:click="showModal()">Voeg tegenstander toe</button>
+		<button class="add" v-on:click="showModal()">Voeg tegenstander toe</button>
 
-		<modal name="hello-world">
-			<div class="container">
+		<modal name="opponents-modal" width="80%" height="auto">
+			<div class="container modal-container">
 				<h2>Voeg tegenstander toe</h2>
 				<div class="addOpponent">
-					<label for="clubName">Naam club</label>
-					<input name="clubName" type="text" class="opponent-input" placeholder="Naam club" v-model="clubName">
+
+					<div class="form-group" :class="{ 'form-group--error': $v.clubName.$error }">
+						<label for="clubName">Naam club*</label>
+						<input name="clubName" type="text" class="opponent-input" placeholder="Naam club" v-model="$v.clubName.$model">
+					</div>
 				</div>
 				<div class="button-container">
 					<button class="btn-secondary hideModal" v-on:click="hideModal()">Annuleren</button>
@@ -26,8 +29,8 @@
 			<div class="grid" v-for="(opponent, i) in opponents" v-bind:key="i + '-opponent'">
 				<span class="clubName grid-item">{{ opponent.clubName }}</span>
 				<span class="grid-item">
-					<button class="edit" @click="editOpponent(opponent.id)">Wijzig</button>
-					<button class="delete" @click="removeOpponent(opponent.id)">Verwijder</button>
+					<!-- <button class="edit" @click="editOpponent(opponent.id)">Wijzig</button> -->
+					<button class="delete" @click="removeOpponent(opponent.id)"><font-awesome-icon icon="trash-alt" /></button>
 				</span>
 			</div>
 		</div>
@@ -36,6 +39,9 @@
 </template>
 
 <script>
+
+import { required, integer, minLength } from 'vuelidate/lib/validators'
+
 
 export default {
 	name: 'Opponents',
@@ -46,6 +52,12 @@ export default {
       clubName: '',
     };
 	},
+		validations: {
+    clubName: {
+      required,
+			minLength: minLength(2)
+		},
+  },
 	created() {
 		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrieveOpponents')
@@ -57,10 +69,10 @@ export default {
 	},
 	methods: {
 		showModal () {
-			this.$modal.show('hello-world');
+			this.$modal.show('opponents-modal');
 		},
 		hideModal () {
-			this.$modal.hide('hello-world');
+			this.$modal.hide('opponents-modal');
 		},
 		sortBy: function(opponents) {
       opponents.sort(function(a, b) {
@@ -68,13 +80,17 @@ export default {
 			});
     },
     addOpponent() {
-      this.$store.dispatch('addOpponent', {
-				id: this.id,
-        clubName: this.clubName,
-				timestamp: new Date(),
-      })
-			this.id = ''
-			this.clubName = ''
+			this.$v.$touch()
+			if (!this.$v.$anyError) {
+				this.$store.dispatch('addOpponent', {
+					id: this.id,
+					clubName: this.clubName,
+					timestamp: new Date(),
+				})
+				this.id = ''
+				this.clubName = ''
+				this.hideModal()
+			}
 		},
 		removeOpponent(id) {
 			if (id) {
@@ -118,8 +134,8 @@ a {
 	padding: 0 .5em;
 	border-radius: 2px;
 	overflow: hidden;
-	height: 38px;
-	line-height: 38px;
+	height: 33px;
+	line-height: 21px;
 }
 .grid-item {
 	border-bottom: 1px solid #000;
@@ -127,30 +143,9 @@ a {
 	overflow: hidden;
 	height: 29px;
 }
-input {
-  align-self: stretch;
-  border-radius: 2px;
-  border: 1px solid #ccc;
-}
 .addOpponent {
 	display: grid;
-	grid-template-columns: 49% 49%;
-	grid-column-gap: 1em;
+	grid-template-columns: 1fr ;
 }
-button.hideModal {
-	margin: 1em 0;
-}
-.container {
-	padding: 1em;
-}
-.button-container {
-	position: absolute;
-	bottom:0.4em;
-	left: 1em;
-	right: 1em;
-	text-align: right;
-}
-.button-container button {
-	padding:10px;
-}
+
 </style>

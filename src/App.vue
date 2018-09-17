@@ -37,12 +37,13 @@ export default {
 <style>
 * {
   font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
 }
 a {
   color: #41b883;
 }
-.brand-logo {
-  
+.container {
+	padding: 1em;
 }
 .brand-logo img {
   height: 40px;
@@ -96,19 +97,58 @@ input {
   padding: .3em .5em;
 }
 .position-item--Keeper {
-	background-color: #b9b142;
+	background-color: #FDC51C;
 }
 .position-item--Verdediger {
-	background-color: #427fb9;
+	background-color: #46D1E1;
 }
 .position-item--Middenvelder {
-	background-color: #4cb942;
+	background-color: #885DF1 ;
 }
 .position-item--Aanvaller {
-	background-color: #b94283;
+	background-color: #FC487F;
 }
 .btn-secondary {
   background-color: grey;
+}
+.add {
+  margin-bottom: 10px;
+}
+button.hideModal {
+	margin: 1em 0;
+}
+.button-container {
+	position: absolute;
+	bottom:0.4em;
+	left: 1em;
+	right: 1em;
+	text-align: right;
+}
+.button-container button {
+	padding:10px;
+}
+.form-group {
+  margin-bottom: 5px;
+}
+.modal-container {
+  padding-bottom: 80px;
+}
+.multiselect, .multiselect__input, .multiselect__single {
+  font-size: 12px !important;
+}
+.form-group input {
+	width: 100%;
+}
+.form-group--error {
+	color: red;
+}
+.form-group--error input {
+	border: 1px solid red;
+}
+.form-group {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-column-gap: 1em;
 }
 </style>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

@@ -159,7 +159,7 @@ export default new Vuex.Store({
         })
 		},
 		retrievePlayers(context) {
-			db.collection('players').get()
+			db.collection('players').orderBy('number', 'asc').get()
 			.then(querySnapshot => {
 				let tempPlayers = []
 				querySnapshot.forEach(doc => {
@@ -193,7 +193,7 @@ export default new Vuex.Store({
 			})
 		},
 		retrieveOpponents(context) {
-			db.collection('opponents').get()
+			db.collection('opponents').orderBy('clubName', 'asc').get()
 			.then(querySnapshot => {
 				let tempOpponents = []
 				querySnapshot.forEach(doc => {

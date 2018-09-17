@@ -1,18 +1,44 @@
 <template>
-  <div class="hello">
+  <div class="matches">
     <h1>{{ msg }}</h1>
-    <h2></h2>
-		
-		<div class="addMatch">
-			<datetime input-class="matchDate" v-model="matchDate" placeholder="Kies datum + tijd" type="datetime"></datetime>
-			<multiselect v-model="matchCategory" :options="categories" placeholder="Selecteer categorie"></multiselect>
-      <multiselect v-model="matchHome" :options="homeAway" label="name" value="bln" placeholder="Selecteer thuis/uit"></multiselect>
-			<multiselect v-model="matchOpponent" :options="opponents" label="clubName" placeholder="Selecteer tegenstander"></multiselect>
-			<button v-on:click.prevent="addMatch">Toevoegen</button>
-		</div>
-		
+    <button class="add" v-on:click="showModal()">Voeg wedstrijd toe</button>
+  <modal name="match-modal" width="80%" height="auto">
+		<div class="container modal-container">
+      <h2>Voeg selectielid toe</h2>
+      <div class="addMatch">
 
+        <div class="form-group" :class="{ 'form-group--error': $v.matchDate.$error }">
+          <label for="number">Datum + Tijd*</label>
+					<datetime input-class="matchDate" v-model.trim="$v.matchDate.$model" placeholder="Kies datum + tijd" type="datetime"></datetime>
+				</div>
 
+        <div class="form-group" :class="{ 'form-group--error': $v.matchCategory.$error }">
+					<label for="number">Categorie*</label>
+					<multiselect v-model.trim="$v.matchCategory.$model" :options="categories" placeholder="Selecteer categorie"></multiselect>
+				</div>
+
+        <div class="form-group">
+					<label for="number">Uit/Thuis*</label>
+          <multiselect v-model.trim="matchHome" :options="homeAway" label="name" value="bln" placeholder="Selecteer thuis/uit"></multiselect>
+				</div>
+
+        <div class="form-group" :class="{ 'form-group--error': $v.matchOpponent.$error }">
+					<label for="number">Tegenstander*</label>
+          <multiselect v-model.trim="$v.matchOpponent.$model" :options="opponents" label="clubName" placeholder="Selecteer tegenstander"></multiselect>
+				</div>
+
+        <div class="button-container">
+					<button class="btn-secondary hideModal" v-on:click="hideModal()">Annuleren</button>
+					<button v-on:click.prevent="addMatch">Toevoegen</button>
+				</div>
+
+      </div>
+    </div>
+    <div class="button-container">
+      <button class="btn-secondary hideModal" v-on:click="hideModal()">Annuleren</button>
+      <button v-on:click.prevent="addMatch">Toevoegen</button>
+    </div>
+  </modal>
 		<div class="columns">
 			<div class="grid-header">
 				<span class="date">Datum.</span>
@@ -30,7 +56,7 @@
 				<span class="homeAway grid-item">{{ match.matchHome ? 'Thuis' : 'Uit' }}</span>
 				<span class="settings grid-item">
 					<!-- <button class="edit" @click="editMatch(match.id)">Wijzig</button> -->
-					<button class="delete" @click="removeMatch(match.id)">Verwijder</button>
+					<button class="delete" @click="removeMatch(match.id)"><font-awesome-icon icon="trash-alt" /></button>
 				</span>
 			</div>
 		</div>
@@ -41,6 +67,7 @@
 <script>
 
 import moment from 'moment'
+import { required, integer, minLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'Matches',
@@ -52,33 +79,53 @@ export default {
       matchCategory: '',
       matchHome: '',
 			clubName: '',
-			opponent: [],
+      opponent: [],
+      categoryNamesById: new Map(),
       isDisabled: false,
       homeAway: [{name:'thuis',bln:true},{name:'uit',bln:false}],
 			categories: ['Bekerwedstrijd','Competitiewedstrijd','Training','Oefenwedstrijd']
     };
-	},
+  },
+  validations: {
+    matchDate: {
+			minLength: minLength(4)
+		},
+		matchCategory: {
+			required,
+			minLength: minLength(4)
+		},
+		matchHome: {
+			required
+		},
+		matchOpponent: {
+			required,
+			minLength: minLength(1)
+		}
+  },
 	created() {
-    console.log(this.$store);
 		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrieveOpponents')
-		this.$store.dispatch('retrieveMatches')
+    this.$store.dispatch('retrieveMatches')
+    this.categoryNamesById = new Map(this.$store.getters.opponents.map(opponent => [opponent.id, opponent.clubName]))
 	},
 	computed: {
     matches() {
-      return this.$store.getters.matches.matches
+      return this.$store.getters.matches
 		},
 		opponents() {
-      return this.$store.getters.opponents.opponents
+      return this.$store.getters.opponents
 		},
 	},
 	methods: {
+    showModal () {
+			this.$modal.show('match-modal');
+		},
+		hideModal () {
+			this.$modal.hide('match-modal');
+		},
     showOpponent(id) {
       if (id) {
-        var data = this.opponents.find(( ele ) => (ele.id === id))
-        if(data) {
-          return data.clubName
-        }
+        return this.categoryNamesById.get(id)
       }
     },
 		laterThanToday(value) {
@@ -87,17 +134,21 @@ export default {
   		}
 		},
     addMatch() {
-      this.$store.dispatch('addMatch', {
-        date: this.matchDate,
-        opponent: this.matchOpponent.id,
-        homeAway: this.matchHome.bln,
-        category: this.matchCategory,
-				timestamp: new Date(),
-      })
-      this.matchDate = ''
-      this.matchOpponent = ''
-      this.matchHome = ''
-      this.matchCategory = ''
+      this.$v.$touch()
+			if (!this.$v.$anyError) {
+        this.$store.dispatch('addMatch', {
+          date: this.matchDate,
+          opponent: this.matchOpponent.id,
+          homeAway: this.matchHome.bln,
+          category: this.matchCategory,
+          timestamp: new Date(),
+        })
+        this.matchDate = ''
+        this.matchOpponent = ''
+        this.matchHome = ''
+        this.matchCategory = ''
+        this.hideModal()
+      }
 		},
 		removeMatch(id) {
       this.$store.dispatch('deleteMatch', id)
@@ -151,8 +202,7 @@ a {
 }
 .addMatch {
   display: grid;
-  grid-template-columns: 10fr 10fr 10fr 3fr;
-	padding: .5em;
+	grid-template-columns: 1fr ;
 }
 .grid-header {
 	background: #eee;
@@ -162,20 +212,26 @@ a {
 }
 .grid, .grid-header {
   display: grid;
-  grid-template-columns: 10fr 10fr 10fr 3fr 3fr;
+  grid-template-columns: 10fr 10fr 10fr 3fr 50px;
   grid-auto-rows: 2em;
 	grid-row-gap: 10px;
   align-items: center;
-  padding: .5em;
   border-radius: 2px;
+  height: 33px;
+	line-height: 21px;
 }
 .grid-item {
-	border-top: 1px solid #000;
-	padding-top: 14px;
-	height: 36px;
+  border-bottom: 1px solid #000;
+	padding-bottom: 8px;
 	overflow: hidden;
+	height: 29px;
 }
-
+.vdatetime * {
+  box-sizing: border-box;
+}
+.matchDate {
+  width: 100% !important;
+}
 input {
   align-self: stretch;
   border-radius: 2px;
@@ -184,6 +240,12 @@ input {
 }
 .imageUrl img {
 	max-width: 40px;
+}
+.settings {
+	text-align: right;
+}
+.settings button {
+	display: inline;
 }
 
 </style>

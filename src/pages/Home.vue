@@ -1,7 +1,15 @@
 <template>
-  <div class="hello">
+  <div class="home">
     <h1>{{ msg }}</h1>
-    <h2></h2>
+    <h2>TODO:</h2>
+    <ol>
+      <li>All screens: add edit functionality</li>
+      <li>All screens: sort functions/filter functions</li>
+      <li>All screens: expand validation response</li>
+      <li>selectie: filter on position</li>
+      <li>selectie: change plaatje url to upload functionality (api) </li>
+      <li>many more</li>
+    </ol>
   </div>
 </template>
 
@@ -27,9 +35,8 @@ ul {
   list-style-type: none;
   padding: 0;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+ol {
+  width: 100%;
 }
 a {
   color: #42b983;
