@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import osclogo from '../assets/osclogo.svg'
+import osclogo from '../../assets/osclogo.svg'
 
 export default {
 	name: 'navigation',

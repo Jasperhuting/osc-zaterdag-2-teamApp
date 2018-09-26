@@ -2,6 +2,7 @@
   <div class="home">
     <h1>{{ msg }}</h1>
     <h2>TODO:</h2>
+    <v-button :onClick="consoleClick">Test</v-button>
     <ol>
       <li>All screens: add edit functionality</li>
       <li>All screens: sort functions/filter functions</li>
@@ -22,6 +23,11 @@ export default {
       players: [],
       msg: 'Welkom op de OSC zaterdag 2 app',
     };
+  },
+  methods: {
+    consoleClick() {
+      console.log('Button clicked')
+    }
   }
 };
 </script>

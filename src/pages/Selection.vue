@@ -40,19 +40,19 @@
 		<div class="columns">
 			<div class="grid-header">
 				<span class="imageUrl"></span>
-				<span class="number" v-on:click="sortBy(players)">Nr.</span>
+				<span class="number">Nr.</span>
 				<span class="firstName">Voornaam</span>
 				<span class="lastName">Achternaam</span>
 				<span class="position">
-					<span class="position-item position-item--Aanvaller" @click="togglePosition('Aanvaller')">Aanvaller</span>
-					<span class="position-item position-item--Middenvelder" @click="togglePosition('Middenvelder')">Middenvelder</span>
-					<span class="position-item position-item--Verdediger" @click="togglePosition('Verdediger')">Verdediger</span>
-					<span class="position-item position-item--Keeper" @click="togglePosition('keeper')">Keeper</span>
+					<span class="position-item position-item--Aanvaller" v-bind:class="{active: filterOnPositionState['Aanvaller']}" v-on:click="filterPosition('Aanvaller')">{{ getAmountPosition('Aanvaller') }}</span>
+					<span class="position-item position-item--Middenvelder" v-bind:class="{active: filterOnPositionState['Middenvelder']}" v-on:click="filterPosition('Middenvelder')">{{ getAmountPosition('Middenvelder') }}</span>
+					<span class="position-item position-item--Verdediger" v-bind:class="{active: filterOnPositionState['Verdediger']}" v-on:click="filterPosition('Verdediger')">{{ getAmountPosition('Verdediger') }}</span>
+					<span class="position-item position-item--Keeper" v-bind:class="{active: filterOnPositionState['Keeper']}" v-on:click="filterPosition('Keeper')">{{ getAmountPosition('Keeper') }}</span>
 				</span>
 				<span class="change"></span>
 			</div>
 
-			<div class="grid" v-for="(player, i) in players" v-bind:key="i + '-player'">
+			<div class="grid" v-for="(player, i) in players" v-bind:key="i + '-player'" @click="editPlayer(player.id)">
 				<span class="imageUrl grid-item"><img v-bind:src="player.imageUrl" /></span>
 				<span class="number grid-item">{{ player.number }}</span>
 				<span class="firstName grid-item">{{ player.firstName }}</span>
@@ -84,6 +84,13 @@ export default {
       number: '',
 			imageUrl: '',
 			positionValue: '',
+			filterOnPositionState: {
+				Keeper: true,
+				Verdediger: true,
+				Middenvelder: true,
+				Aanvaller: true,
+			},
+			filter: '',
 			positions: ['Aanvaller','Middenvelder','Verdediger','Keeper'],
 			// numbers: [],
     };
@@ -96,11 +103,11 @@ export default {
 		},
 		lastName: {
 			required,
-			minLength: minLength(4)
+			minLength: minLength(2)
 		},
 		firstName: {
 			required,
-			minLength: minLength(4)
+			minLength: minLength(2)
 		},
 		position: {
 			required,
@@ -108,13 +115,15 @@ export default {
 		}
   },
 	created() {
-		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrievePlayers')
 	},
 	computed: {
     players() {
       return this.$store.getters.players
-    }
+		},
+		currentPlayer() {
+      return this.$store.getters.currentPlayer
+		},
 	},
 	methods: {
 		showModal () {
@@ -123,11 +132,20 @@ export default {
 		hideModal () {
 			this.$modal.hide('player-modal');
 		},
-		sortBy: function(players) {
-      players.sort(function(a, b) {
-				return a.number - b.number;
+		filterPosition (position) {
+			this.filterOnPositionState[position] = !this.filterOnPositionState[position];
+			this.$store.dispatch('retrievePlayersByPosition', this.filterOnPositionState)
+		},
+		getAmountPosition (position) {
+			let count = 0
+			this.players.forEach(player => {
+				if (player.position.includes(position)) {
+					count++
+				}
 			});
-    },
+			const extra = count > 1 ? 's' : ''
+			return `${count} ${position}${extra}`
+		},
 		showPositions(positions) {
 			let positionsOutput = ''
 			for (var i = 0; i < this.positions.length; i ++) {
@@ -140,10 +158,6 @@ export default {
 			}
 			return positionsOutput
 		},
-		togglePosition(position) {
-			console.log(position)
-		},
-
     addPlayer() {
 			this.$v.$touch()
 			if (!this.$v.$anyError) {
@@ -168,6 +182,21 @@ export default {
 		removePlayer(id) {
 			if (id) {
 				this.$store.dispatch('deletePlayer', id)
+			}
+		},
+		editPlayer(id) {
+			if (id) {
+				this.$store.dispatch('getPlayer', {
+					// id: this.currentPlayer.id,
+					firstName: this.currentPlayer.firstName,
+					lastName: this.currentPlayer.lastName,
+					number: this.currentPlayer.number,
+					imageUrl: this.currentPlayer.imageUrl,
+					position: this.currentPlayer.position
+				}).then(() => {
+					this.showModal()
+				});
+		
 			}
     },
   }

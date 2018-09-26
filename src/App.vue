@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Navigation />
+    <v-navigation />
     <div class="container">
       <router-view/>
     </div>
@@ -8,12 +8,14 @@
 </template>
 
 <script>
-import Navigation from './components/navigation'
+import Navigation from './components/navigation/navigation'
+import Button from './components/button/button'
 
 export default {
   name: 'App',
   components: {
-    Navigation
+    'v-navigation' : Navigation,
+    'v-button' : Button
   },
   data() {
    return {
@@ -24,7 +26,7 @@ export default {
   methods: {
   },
   created() {
-
+    this.$store.dispatch('initRealtimeListeners')
   },
   computed: {
 
@@ -96,16 +98,20 @@ input {
   font-size: 11px;
   padding: .3em .5em;
 }
-.position-item--Keeper {
+.position-item--Keeper.active,
+.grid-item .position-item--Keeper {
 	background-color: #FDC51C;
 }
-.position-item--Verdediger {
+.position-item--Verdediger.active,
+.grid-item .position-item--Verdediger {
 	background-color: #46D1E1;
 }
-.position-item--Middenvelder {
+.position-item--Middenvelder.active,
+.grid-item .position-item--Middenvelder {
 	background-color: #885DF1 ;
 }
-.position-item--Aanvaller {
+.position-item--Aanvaller.active,
+.grid-item .position-item--Aanvaller {
 	background-color: #FC487F;
 }
 .btn-secondary {

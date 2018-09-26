@@ -103,7 +103,6 @@ export default {
 		}
   },
 	created() {
-		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrieveOpponents')
     this.$store.dispatch('retrieveMatches')
     this.categoryNamesById = new Map(this.$store.getters.opponents.map(opponent => [opponent.id, opponent.clubName]))

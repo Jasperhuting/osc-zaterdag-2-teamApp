@@ -11,6 +11,7 @@ import Opponents from '@/pages/Opponents';
 Vue.use(Router);
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',

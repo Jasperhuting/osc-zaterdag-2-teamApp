@@ -13,25 +13,34 @@ import Vuelidate from 'vuelidate'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import Button from './components/button/button.vue'
+Vue.config.productionTip = false;
 
 library.add(faTrashAlt)
+
 Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('multiselect', Multiselect)
+Vue.component('datetime', Datetime);
+Vue.component('v-button', Button);
+
 
 Vue.use(Vuelidate)
 Vue.use(VModal)
 
-Vue.component('multiselect', Multiselect)
-Vue.component('datetime', Datetime);
-
-Vue.config.productionTip = false;
-
-Vue.filter('formatDateTime', function (value) {
+Vue.filter('formatDateTime', (value) => {
   if (value) {
     return moment(String(value)).format('D MMMM YYYY - HH:mm')
   }
 })
 
-Vue.filter('laterThanToday', function (value) {
+// Vue.filter('filterOnPosition', (value) => {
+//   console.log(value);
+//   // if (value) {
+//   //   return moment(String(value)).format('D MMMM YYYY - HH:mm')
+//   // }
+// })
+
+Vue.filter('laterThanToday', (value) => {
   if (value) {
     return moment(value) > moment()
   }
@@ -42,7 +51,7 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: { App, Multiselect, Datetime, moment },
+  components: { App, Multiselect, Datetime, moment},
   template: '<App/>'
 });
 

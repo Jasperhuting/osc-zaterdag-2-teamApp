@@ -34,7 +34,6 @@ export default {
     };
 	},
 	created() {
-		// this.$store.dispatch('initRealtimeListeners')
 		// this.$store.dispatch('retrieveOpponents')
 		// this.$store.dispatch('retrieveMatches')
 	},

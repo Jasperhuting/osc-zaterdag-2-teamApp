@@ -59,7 +59,6 @@ export default {
 		},
   },
 	created() {
-		this.$store.dispatch('initRealtimeListeners')
 		this.$store.dispatch('retrieveOpponents')
 	},
 	computed: {
@@ -74,8 +73,8 @@ export default {
 		hideModal () {
 			this.$modal.hide('opponents-modal');
 		},
-		sortBy: function(opponents) {
-      opponents.sort(function(a, b) {
+		sortBy(opponents) {
+      opponents.sort((a, b) => {
 				return a.clubName - b.clubName;
 			});
     },

@@ -28,7 +28,7 @@ export default {
     };
 	},
 	methods: {
-		getList: function() {
+		getList() {
 		// 	db.collection('players').orderBy("number", "asc").get().then(querySnapshot => {
     //   querySnapshot.forEach(doc => {
     //     const data = {
