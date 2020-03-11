@@ -7,14 +7,14 @@
       <h2>Voeg selectielid toe</h2>
       <div class="addMatch">
 
-        <div class="form-group" :class="{ 'form-group--error': $v.matchDate.$error }">
+        <div class="form-group">
           <label for="number">Datum + Tijd*</label>
-					<datetime input-class="matchDate" v-model.trim="$v.matchDate.$model" placeholder="Kies datum + tijd" type="datetime"></datetime>
+					<datetime input-class="matchDate" placeholder="Kies datum + tijd" type="datetime"></datetime>
 				</div>
 
-        <div class="form-group" :class="{ 'form-group--error': $v.matchCategory.$error }">
+        <div class="form-group">
 					<label for="number">Categorie*</label>
-					<multiselect v-model.trim="$v.matchCategory.$model" :options="categories" placeholder="Selecteer categorie"></multiselect>
+					<multiselect :options="categories" placeholder="Selecteer categorie"></multiselect>
 				</div>
 
         <div class="form-group">
@@ -22,9 +22,9 @@
           <multiselect v-model.trim="matchHome" :options="homeAway" label="name" value="bln" placeholder="Selecteer thuis/uit"></multiselect>
 				</div>
 
-        <div class="form-group" :class="{ 'form-group--error': $v.matchOpponent.$error }">
+        <div class="form-group">
 					<label for="number">Tegenstander*</label>
-          <multiselect v-model.trim="$v.matchOpponent.$model" :options="opponents" label="clubName" placeholder="Selecteer tegenstander"></multiselect>
+          <multiselect :options="opponents" label="clubName" placeholder="Selecteer tegenstander"></multiselect>
 				</div>
 
         <div class="button-container">
@@ -67,7 +67,6 @@
 <script>
 
 import moment from 'moment'
-import { required, integer, minLength } from 'vuelidate/lib/validators'
 
 export default {
   name: 'Matches',
@@ -85,22 +84,6 @@ export default {
       homeAway: [{name:'thuis',bln:true},{name:'uit',bln:false}],
 			categories: ['Bekerwedstrijd','Competitiewedstrijd','Training','Oefenwedstrijd']
     };
-  },
-  validations: {
-    matchDate: {
-			minLength: minLength(4)
-		},
-		matchCategory: {
-			required,
-			minLength: minLength(4)
-		},
-		matchHome: {
-			required
-		},
-		matchOpponent: {
-			required,
-			minLength: minLength(1)
-		}
   },
 	created() {
 		this.$store.dispatch('retrieveOpponents')
@@ -133,21 +116,19 @@ export default {
   		}
 		},
     addMatch() {
-      this.$v.$touch()
-			if (!this.$v.$anyError) {
-        this.$store.dispatch('addMatch', {
-          date: this.matchDate,
-          opponent: this.matchOpponent.id,
-          homeAway: this.matchHome.bln,
-          category: this.matchCategory,
-          timestamp: new Date(),
-        })
-        this.matchDate = ''
-        this.matchOpponent = ''
-        this.matchHome = ''
-        this.matchCategory = ''
-        this.hideModal()
-      }
+      this.$store.dispatch('addMatch', {
+        date: this.matchDate,
+        opponent: this.matchOpponent.id,
+        homeAway: this.matchHome.bln,
+        category: this.matchCategory,
+        timestamp: new Date(),
+      })
+      this.matchDate = ''
+      this.matchOpponent = ''
+      this.matchHome = ''
+      this.matchCategory = ''
+      this.hideModal()
+
 		},
 		removeMatch(id) {
       this.$store.dispatch('deleteMatch', id)

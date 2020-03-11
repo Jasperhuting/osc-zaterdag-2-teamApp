@@ -7,22 +7,22 @@
 			<div class="container modal-container">
 				<h2>Voeg selectielid toe</h2>
 			<div class="addPlayer">
-				<div class="form-group" :class="{ 'form-group--error': $v.firstName.$error }">
+				<div class="form-group" >
 					<label for="firstName">Voornaam*</label>
-					<input type="text" name="firstName" class="player-input" placeholder="Voornaam"  v-model.trim="$v.firstName.$model">
+					<input type="text" name="firstName" class="player-input" placeholder="Voornaam">
 				</div>
-				<div class="form-group" :class="{ 'form-group--error': $v.lastName.$error }">
+				<div class="form-group">
 					<label for="lastName">Achternaam*</label>
-					<input type="text" name="lastName" class="player-input" placeholder="Achternaam" v-model.trim="$v.lastName.$model">
+					<input type="text" name="lastName" class="player-input" placeholder="Achternaam">
 				</div>
-				<div class="form-group" :class="{ 'form-group--error': $v.number.$error }">
+				<div class="form-group">
 					<label for="number">Nummer*</label>
-					<input type="text" name="number" class="player-input" placeholder="Nummer" v-model.trim="$v.number.$model">
+					<input type="text" name="number" class="player-input" placeholder="Nummer">
 				</div>
 				<!-- <multiselect v-model="number" :options="numbers" placeholder="Selecteer nummer"></multiselect> -->
-				<div class="form-group" :class="{ 'form-group--error': $v.position.$error }">
+				<div class="form-group">
 					<label for="position">Positie(s)*</label>
-					<multiselect name="position" v-model="$v.position.$model" :options="positions" :multiple="true" :close-on-select="false" placeholder="Selecteer positie(s)"></multiselect>
+					<multiselect name="position" :options="positions" :multiple="true" :close-on-select="false" placeholder="Selecteer positie(s)"></multiselect>
 				</div>
 				<div class="form-group">
 					<label for="imageUrl">Plaatje (url)</label>
@@ -53,7 +53,7 @@
 			</div>
 
 			<div class="grid" v-for="(player, i) in players" v-bind:key="i + '-player'" @click="editPlayer(player.id)">
-				<span class="imageUrl grid-item"><img v-bind:src="player.imageUrl" /></span>
+				<span class="imageUrl grid-item"></span>
 				<span class="number grid-item">{{ player.number }}</span>
 				<span class="firstName grid-item">{{ player.firstName }}</span>
 				<span class="lastName grid-item">{{ player.lastName }}</span>
@@ -69,8 +69,6 @@
 </template>
 
 <script>
-import { required, integer, minLength, maxLength } from 'vuelidate/lib/validators'
-
 
 export default {
 	name: 'Selection',
@@ -95,25 +93,6 @@ export default {
 			// numbers: [],
     };
 	},
-	validations: {
-    number: {
-      required,
-			integer,
-			maxLength: maxLength(2)
-		},
-		lastName: {
-			required,
-			minLength: minLength(2)
-		},
-		firstName: {
-			required,
-			minLength: minLength(2)
-		},
-		position: {
-			required,
-			minLength: minLength(1)
-		}
-  },
 	created() {
 		this.$store.dispatch('retrievePlayers')
 	},
@@ -159,8 +138,7 @@ export default {
 			return positionsOutput
 		},
     addPlayer() {
-			this.$v.$touch()
-			if (!this.$v.$anyError) {
+			// if (!this.$v.$anyError) {
 				this.$store.dispatch('addPlayer', {
 					id: this.id,
 					firstName: this.firstName,
@@ -177,15 +155,15 @@ export default {
 				this.imageUrl = ''
 				this.position = ''
 				this.hideModal()
-			}
+			// }
 		},
 		removePlayer(id) {
 			if (id) {
 				this.$store.dispatch('deletePlayer', id)
 			}
 		},
-		editPlayer(id) {
-			if (id) {
+		editPlayer(player) {
+			if (player) {
 				this.$store.dispatch('getPlayer', {
 					// id: this.currentPlayer.id,
 					firstName: this.currentPlayer.firstName,
@@ -196,7 +174,7 @@ export default {
 				}).then(() => {
 					this.showModal()
 				});
-		
+
 			}
     },
   }

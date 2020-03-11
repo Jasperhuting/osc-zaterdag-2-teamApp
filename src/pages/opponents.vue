@@ -8,9 +8,9 @@
 				<h2>Voeg tegenstander toe</h2>
 				<div class="addOpponent">
 
-					<div class="form-group" :class="{ 'form-group--error': $v.clubName.$error }">
+					<div class="form-group">
 						<label for="clubName">Naam club*</label>
-						<input name="clubName" type="text" class="opponent-input" placeholder="Naam club" v-model="$v.clubName.$model">
+						<input name="clubName" type="text" class="opponent-input" placeholder="Naam club">
 					</div>
 				</div>
 				<div class="button-container">
@@ -40,9 +40,6 @@
 
 <script>
 
-import { required, integer, minLength } from 'vuelidate/lib/validators'
-
-
 export default {
 	name: 'Opponents',
   data() {
@@ -52,12 +49,6 @@ export default {
       clubName: '',
     };
 	},
-		validations: {
-    clubName: {
-      required,
-			minLength: minLength(2)
-		},
-  },
 	created() {
 		this.$store.dispatch('retrieveOpponents')
 	},
@@ -79,17 +70,14 @@ export default {
 			});
     },
     addOpponent() {
-			this.$v.$touch()
-			if (!this.$v.$anyError) {
-				this.$store.dispatch('addOpponent', {
-					id: this.id,
-					clubName: this.clubName,
-					timestamp: new Date(),
-				})
-				this.id = ''
-				this.clubName = ''
-				this.hideModal()
-			}
+			this.$store.dispatch('addOpponent', {
+				id: this.id,
+				clubName: this.clubName,
+				timestamp: new Date(),
+			})
+			this.id = ''
+			this.clubName = ''
+			this.hideModal()
 		},
 		removeOpponent(id) {
 			if (id) {
